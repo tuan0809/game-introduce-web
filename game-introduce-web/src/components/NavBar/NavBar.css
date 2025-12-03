@@ -1,50 +1,102 @@
+:root {
+  --primary: rgb(96, 165, 250);
+  --primary-700: rgb(37, 99, 235);
+  --muted: rgba(230,238,252,0.85);
+}
+
 .navbar {
-  background-color: #333;
-  padding: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(7,16,36,0.45), rgba(7,16,36,0.25));
+  border-bottom: 1px solid rgba(96,165,250,0.06);
+  position: relative;
+  z-index: 1000;
+  backdrop-filter: blur(6px);
 }
 
-.navbar-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  max-width: 1200px;
+.navbar-inner {
+  max-width: 1280px;
   margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
+/* Logo + image */
 .navbar-logo {
-  color: #fff;
-  font-size: 24px;
-  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-weight: 800;
+  font-size: 1.125rem;
   text-decoration: none;
-  padding: 15px 0;
+  letter-spacing: -0.4px;
+  padding: 6px 8px;
 }
 
+.navbar-logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+  background: linear-gradient(90deg, rgba(96,165,250,0.12), rgba(37,99,235,0.06));
+}
+
+/* optional smaller text style */
+.navbar-logo-text {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* menu */
 .navbar-menu {
   display: flex;
+  gap: 12px;
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 30px;
+  align-items: center;
 }
 
-.navbar-item {
-  margin: 0;
-}
-
-.navbar-link {
-  color: #fff;
+.nav-link {
+  color: var(--muted);
   text-decoration: none;
-  font-size: 16px;
-  transition: color 0.3s ease;
   padding: 8px 12px;
-  display: block;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background .15s ease, color .15s ease, transform .12s ease, box-shadow .15s ease;
 }
 
-.navbar-link:hover {
-  color: #4CAF50;
-  border-bottom: 2px solid #4CAF50;
+.nav-link:hover {
+  background: rgba(96,165,250,0.08);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  background: linear-gradient(90deg, var(--primary), var(--primary-700));
+  color: white;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.16);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .navbar-inner {
+    padding: 10px 14px;
+  }
+  .navbar-menu {
+    gap: 8px;
+  }
+  .nav-link {
+    padding: 6px 10px;
+    font-size: 0.95rem;
+  }
+  .navbar-logo-img {
+    width: 30px;
+    height: 30px;
+  }
 }

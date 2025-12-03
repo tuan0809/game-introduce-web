@@ -1,7 +1,14 @@
+html, body, #root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  margin: 0; /* bỏ margin: 0 auto */
+  padding: 2rem; /* giữ hoặc sửa theo ý bạn */
   text-align: center;
 }
 

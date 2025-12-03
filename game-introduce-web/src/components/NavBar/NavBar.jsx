@@ -1,28 +1,32 @@
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import './NavBar.css';
+import logo from '../../assets/logo.png';
 
 const NavBar = () => {
   return (
     <nav className="navbar">
-      <div className="navbar-container">
-        <Link to="/" className="navbar-logo">
-          Game Introduce
-        </Link>
+      <div className="navbar-inner">
+        <NavLink to="/aboutus" className="navbar-logo">
+          <img src={logo} alt="Logo" className="navbar-logo-img" />
+          <span className="navbar-logo-text">Game R</span>
+        </NavLink>
+
         <ul className="navbar-menu">
-          <li className="navbar-item">
-            <Link to="/" className="navbar-link">
-              Home
-            </Link>
+          <li>
+            <NavLink to="/" end className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+              Trang chủ
+            </NavLink>
           </li>
-          <li className="navbar-item">
-            <Link to="/aboutus" className="navbar-link">
-              AboutUs
-            </Link>
+          <li>
+            <NavLink to="/aboutus" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+              Về chúng tôi
+            </NavLink>
           </li>
-          <li className="navbar-item">
-            <Link to="/support" className="navbar-link">
-              Support
-            </Link>
+          <li>
+            <NavLink to="/support" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+              Hỗ trợ
+            </NavLink>
           </li>
         </ul>
       </div>
