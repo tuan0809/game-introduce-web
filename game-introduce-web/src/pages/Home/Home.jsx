@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import NavBar from '../../components/NavBar/NavBar';
 import GamePrev from '../../components/GamePrev/GamePrev';
-import './Home.css';
 import Footer from '../../components/Footer/Footer';
+import IntroVideo from '../../components/Video/IntroVideo';
+
+import './Home.css';
 
 import img1 from '../../assets/game-wwm.jpg';
 import img2 from '../../assets/game-wuwa.jpg';
 import img3 from '../../assets/game-genshin.jpg';
+import img4 from '../../assets/game-minecraft.jpg';
 
 const Home = () => {
   const games = [
@@ -17,16 +20,86 @@ const Home = () => {
   ];
 
   const recommended = [
-    { id: 'r1', image: img3, name: 'Genshin Impact' },
     { id: 'r2', image: img1, name: 'Where Wind Meet' },
-    { id: 'r3', image: img2, name: 'Wuthering Waves' }
+    { id: 'r1', image: img4, name: 'Minecraft' },
+    { id: 'r3', image: img2, name: 'Wuthering Waves' },
+    { id: 'r4', image: img3, name: 'Genshin Impact' },
+    { id: 'r5', image: img1, name: 'Where Wind Meet 2' }
   ];
 
   const goatList = [
-    { id: 'g1', image: img3, name: 'Genshin Impact' },
-    { id: 'g2', image: img2, name: 'Wuthering Waves' },
-    { id: 'g3', image: img1, name: 'Where Wind Meet' }
+    { id: 'g1', image: img4, name: 'Minecraft' },
+    { id: 'g2', image: img3, name: 'Genshin Impact' },
+    { id: 'g3', image: img1, name: 'Wuthering Waves' },
+    { id: 'g4', image: img2, name: 'Wuthering Waves 2' },
+    { id: 'g5', image: img4, name: 'Minecraft 2' }
   ];
+
+  // duplicated arrays for seamless loop
+  const recommendedLoop = [...recommended, ...recommended];
+  const goatLoop = [...goatList, ...goatList];
+
+  // refs & state for two sliders
+  const recTrackRef = useRef(null);
+  const goatTrackRef = useRef(null);
+  const [recIndex, setRecIndex] = useState(0);
+  const [goatIndex, setGoatIndex] = useState(0);
+
+  // helper to setup auto slide for a track
+  const useAutoSlide = (trackRef, loopLength, setIndex) => {
+    useEffect(() => {
+      if (!trackRef.current) return;
+      const track = trackRef.current;
+      let interval = null;
+      let step = 0;
+      const computeStep = () => {
+        const firstItem = track.querySelector('.slider-item');
+        if (!firstItem) return 0;
+        const itemW = firstItem.getBoundingClientRect().width;
+        const gap = parseFloat(getComputedStyle(track).gap) || 0;
+        return itemW + gap;
+      };
+      // recompute on resize
+      const onResize = () => { step = computeStep(); };
+      step = computeStep();
+      window.addEventListener('resize', onResize);
+
+      let idx = 0;
+      const advance = () => {
+        idx += 1;
+        // apply transition for smooth ease
+        track.style.transition = 'transform 0.8s cubic-bezier(.22,.9,.3,1)';
+        track.style.transform = `translateX(-${idx * step}px)`;
+        // if we've reached original length (end of first loop), after transition jump to start
+        if (idx === loopLength) {
+          const handler = () => {
+            // remove transition, snap back to start
+            track.style.transition = 'none';
+            idx = 0;
+            track.style.transform = `translateX(0px)`;
+            track.removeEventListener('transitionend', handler);
+            // update external state without transition
+            setIndex(0);
+          };
+          track.addEventListener('transitionend', handler);
+        } else {
+          // update external index normally
+          setIndex(idx);
+        }
+      };
+
+      interval = setInterval(advance, 3000);
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('resize', onResize);
+      };
+    }, [trackRef, loopLength, setIndex]);
+  };
+
+  // setup sliders: loopLength = original length
+  useAutoSlide(recTrackRef, recommended.length, setRecIndex);
+  useAutoSlide(goatTrackRef, goatList.length, setGoatIndex);
 
   return (
     <div className="home-root">
@@ -38,14 +111,20 @@ const Home = () => {
         <div className="hero-inner">
           <h1 className="hero-title">Khám phá về những tựa game nổi tiếng</h1>
           <p className="hero-sub">
-            Giới thiệu, đánh giá về các game PC, Mobile đang hot trong khoảng thời gian hiện tại.
+            Giới thiệu, đánh giá về các game PC, Mobile đang hot trong khoảng thời gian hiện tại
           </p>
+
+          <IntroVideo />
+
           <Link to="/game" className="cta-button">Khám phá thêm</Link>
         </div>
       </section>
 
       <main className="home-content">
-        <h2 className="section-title">Featured</h2>
+        <h2 className="section-title">
+          <span className="title-icon">⭐</span>
+          Không thể bỏ lỡ
+        </h2>
 
         <div className="games-list">
           {games.map((game) => (
@@ -59,28 +138,40 @@ const Home = () => {
           ))}
         </div>
 
-        {/* We Recommended (no description) */}
+        {/* We Recommended - auto sliding */}
         <section className="we-recommended">
-          <h2 className="section-title">Best for PC</h2>
-          <div className="cards-grid">
-            {recommended.map((g) => (
-              <Link key={g.id} to="/game" className="game-link card-link">
-                <GamePrev image={g.image} name={g.name} showDescription={false} />
-              </Link>
-            ))}
+          <h2 className="section-title">
+            <span className="title-icon">💻</span>
+            Lựa chọn tuyệt vời cho PC
+          </h2>
+
+          <div className="auto-slider">
+            <div className="slider-track" ref={recTrackRef}>
+              {recommendedLoop.map((g, idx) => (
+                <Link key={g.id + '-' + idx} to="/game" className="game-link card-link slider-item">
+                  <GamePrev image={g.image} name={g.name} showDescription={false} />
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* GOAT (no description) */}
+        {/* GOAT - auto sliding */}
         <section className="goat-section">
-          <h2 className="section-title">GOAT</h2>
-          <div className="cards-grid goat-grid">
-            {goatList.map((g) => (
-              <Link key={g.id} to="/game" className="game-link card-link">
-                <div className="goat-badge">GOAT</div>
-                <GamePrev image={g.image} name={g.name} showDescription={false} />
-              </Link>
-            ))}
+          <h2 className="section-title">
+            <span className="title-icon">🏆</span>
+            Tốt nhất mọi thời đại
+          </h2>
+
+          <div className="auto-slider">
+            <div className="slider-track" ref={goatTrackRef}>
+              {goatLoop.map((g, idx) => (
+                <Link key={g.id + '-' + idx} to="/game" className="game-link card-link slider-item">
+                  <div className="goat-badge">GOAT</div>
+                  <GamePrev image={g.image} name={g.name} showDescription={false} />
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
       </main>
