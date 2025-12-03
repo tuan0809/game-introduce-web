@@ -1,0 +1,32 @@
+.home-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.home-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.home-content {
+  flex: 1;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.games-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
+  margin: 40px auto 0;
+}
+
+.game-link {
+  text-decoration: none;
+  color: inherit;
+}
